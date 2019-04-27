@@ -4,11 +4,11 @@ const { insertUser, destroyUser } = require('../repository/user')
 const { logger, parseMessage, errorHandler, response } = require('../utils')
 const COMMUNICATION = require('../models/Communication')
 
-const rollback = async (originalMessage, resourceId, originalErrorEvent) => {
+const rollback = async (originalMessage, id, originalErrorEvent) => {
   logger.log({ level: 'info', message: 'Database rollback initiated.' })
 
   try {
-    await destroyUser(resourceId)
+    await destroyUser(id)
   } catch (e) {
     try {
       await errorHandler.resolveThroughNackAndRequeue(originalMessage)
@@ -28,7 +28,6 @@ const rollback = async (originalMessage, resourceId, originalErrorEvent) => {
     'DATBASE_ERROR',
     originalMessage,
     originalErrorEvent,
-    err
   )
 
   logger.log({ level: 'info', message: 'Database rollback was completed.' })
@@ -46,13 +45,10 @@ const handler = async (originalMessage) => {
     return
   }
 
-  const resourceId = uuid()
+  let user
 
   try {
-    await insertUser({
-      id: resourceId,
-      ...msg.data.user
-    })
+    user = await insertUser(msg.data)
   } catch (e) {
     logger.log({ level: 'error', message: `Something wrong happend with Database Insertion, ${e}` })
     await errorHandler.resolveThroughNackAndRequeue(originalMessage)
@@ -63,7 +59,7 @@ const handler = async (originalMessage) => {
     rabbit.publish(COMMUNICATION.INSERT_USER.EXCHANGE, response(), originalMessage.fields.routingKey)
   } catch (e) {
     logger.log({ level: 'error', message: `Can not publish message, ${e}` })
-    rollback(originalMessage, resourceId, err)
+    rollback(originalMessage, user.id, e)
     return
   }
 

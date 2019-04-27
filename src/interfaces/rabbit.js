@@ -55,10 +55,6 @@ const publish = (exchange, msg, routingKey) => {
   )
 }
 
-const publishError = (error) => {
-  return publish('ERRORS', error)
-}
-
 const ack = (message, allUpTo = false) => {
   rabbitChannel.ack(message, allUpTo)
 }
@@ -70,7 +66,6 @@ const nack = (message, multiple = false, requeue = false) => {
 module.exports = {
   openConnection,
   publish,
-  publishError,
   registerConsumers,
   ack,
   nack

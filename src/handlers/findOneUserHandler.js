@@ -1,6 +1,6 @@
 const rabbit = require('../interfaces/rabbit')
 const { findByUsername } = require('../repository/user')
-const { logger, parseMessage, errorHandler } = require('../utils')
+const { logger, parseMessage, errorHandler, response } = require('../utils')
 const COMMUNICATION = require('../models/Communication')
 
 const handler = async (originalMessage) => {

@@ -1,16 +1,18 @@
 const rabbit = require('../interfaces/rabbit')
 const logger = require('./logger')
+const COMMUNICATION = require('../models/Communication')
 
 const notifyUpstream = (error) => {
   return new Promise((resolve, reject) => {
     try {
-      rabbit.publishError(error)
+      rabbit.publish(COMMUNICATION.ERRORS.EXCHANGE, error)
       if (error.details) {
         rabbit.ack(error.details.originalMessage, false)
       }
       resolve()
+      logger.log({ level: 'info', message: `Error was resolved by Notifying Error Upstream.` })
     } catch (e) {
-      logger.log({ level: 'error', message: `Notify Error Upstream Failed. ${e}` })
+      logger.log({ level: 'error', message: `Notify Error Upstream Failed. Check RabbitMQ Connection. ${e}` })
       reject()
     }
   })
@@ -62,15 +64,23 @@ const notifyErrorUpstream = async (
 
 const resolveThroughNackAndRequeue = async (originalMessage) => {
   try {
-    if (originalMessage.fields.redelivered) {
-      rabbit.nack(originalMessage.details.originalMessage, false, true)
+    if (originalMessage.fields && !originalMessage.fields.redelivered) {
+      rabbit.nack(originalMessage, false, true)
+      logger.log({ level: 'info', message: `Error was resolved through Nack and Requeue.` })
     } else {
-      await notifyUpstream('This error already redelivered', 'REDELIVERED', originalMessage)
+      await notifyUpstream({
+        reasonCode: 'ALREADY_REDELIVERED',
+        reason: 'This error already redelivered, it goes to error queue',
+        details: {
+          originalMessage
+        }
+      })
     }
   } catch (e) {
-    logger.log({ level: 'error', message: `Resolve through NACK and Requeue failed, ${e}` })
-    return
+    logger.log({ level: 'error', message: `Resolve through NACK and Requeue failed, Check RabbitMQ Connetion. ${e}` })
   }
+
+  return
 }
 
 module.exports = {
