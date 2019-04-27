@@ -1,0 +1,28 @@
+// This is basically definitions of communcation between API and AMQP, in real life this should be wayyy smarter
+module.exports = {
+  ERRORS: {
+    EXCHANGE: 'USERS_ERRORS',
+    REQUEST: 'USERS_ERRORS_REQ',
+    RESPONSE: 'USERS_ERRORS_RES'
+  },
+  INSERT_USER: {
+    EXCHANGE: 'USERS_INSERT',
+    REQUEST: 'USERS_INSERT_REQ',
+    RESPONSE: 'USERS_INSERT_RES',
+  },
+  FIND_ONE_USER: {
+    EXCHANGE: 'USERS_FIND_ONE',
+    REQUEST: 'USERS_FIND_ONE_REQ',
+    RESPONSE: 'USERS_FIND_ONE_RES',
+  },
+  FIND_ALL_USERS: {
+    EXCHANGE: 'USERS_FIND_ALL',
+    REQUEST: 'USERS_FIND_ALL_REQ',
+    RESPONSE: 'USERS_FIND_ALL_RES',
+  },
+  DESTROY_USER: {
+    EXCHANGE: 'USER_DESTROY',
+    REQUEST: 'USER_DESTROY_REQ',
+    RESPONSE: 'USER_DESTROY_RES',
+  },
+}

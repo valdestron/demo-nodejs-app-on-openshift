@@ -1,2 +1,2 @@
 # anti-human-cd
-CICD project for DevDays
+Example demo microservice for DevDays conference
