@@ -68,7 +68,7 @@ const resolveThroughNackAndRequeue = async (originalMessage) => {
       await notifyUpstream('This error already redelivered', 'REDELIVERED', originalMessage)
     }
   } catch (e) {
-    logger.log({ level: 'error', message: `Resolve through NACK and Requeue failed, ${e}`})
+    logger.log({ level: 'error', message: `Resolve through NACK and Requeue failed, ${e}` })
     return
   }
 }

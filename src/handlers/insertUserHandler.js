@@ -35,7 +35,7 @@ const rollback = async (originalMessage, resourceId, originalErrorEvent) => {
 }
 
 const handler = async (originalMessage) => {
-  const msg = parseMessage(originalMessage);
+  const msg = parseMessage(originalMessage)
 
   if (!msg) {
     await errorHandler.notifyErrorUpstream(
@@ -52,8 +52,8 @@ const handler = async (originalMessage) => {
     await insertUser({
       id: resourceId,
       ...msg.data.user
-    });
-  } catch(e) {
+    })
+  } catch (e) {
     logger.log({ level: 'error', message: `Something wrong happend with Database Insertion, ${e}` })
     await errorHandler.resolveThroughNackAndRequeue(originalMessage)
     return

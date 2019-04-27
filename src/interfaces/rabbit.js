@@ -2,8 +2,7 @@ const amqp = require('amqplib')
 const { rabbit } = require('../configuration')
 const { logger } = require('../utils')
 const COMMUNICATION = require('../models/Communication')
-const COMMUNICATION_VALUES = Object.values(COMMUNICATION);
-
+const COMMUNICATION_VALUES = Object.values(COMMUNICATION)
 
 let rabbitChannel = null
 
@@ -26,7 +25,7 @@ const openConnection = () => {
     })
     .then((channel) => {
       rabbitChannel = channel
-      return Promise.all(COMMUNICATION_VALUES.map(({EXCHANGE, REQUEST}) => assertExchange(EXCHANGE, REQUEST)))
+      return Promise.all(COMMUNICATION_VALUES.map(({ EXCHANGE, REQUEST }) => assertExchange(EXCHANGE, REQUEST)))
     })
     .catch((err) => {
       logger.log({

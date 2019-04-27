@@ -4,7 +4,7 @@ const { logger, parseMessage, errorHandler } = require('../utils')
 const COMMUNICATION = require('../models/Communication')
 
 const handler = async (originalMessage) => {
-  const msg = parseMessage(originalMessage);
+  const msg = parseMessage(originalMessage)
 
   if (!msg) {
     await errorHandler.notifyErrorUpstream(
@@ -18,8 +18,8 @@ const handler = async (originalMessage) => {
   let user
 
   try {
-    user = await findByUsername(msg.data.username);
-  } catch(e) {
+    user = await findByUsername(msg.data.username)
+  } catch (e) {
     logger.log({ level: 'error', message: `Something wrong happend during the user search, ${e}` })
     await errorHandler.resolveThroughNackAndRequeue(originalMessage)
     return

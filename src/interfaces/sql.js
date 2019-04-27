@@ -3,6 +3,10 @@ const { Model } = require('objection')
 const { database } = require('../configuration')
 const { logger } = require('../utils')
 
+/**
+ * Connection to database
+ * @returns {Promise} Connection promise
+ */
 async function connect() {
   const knex = Knex(database)
 

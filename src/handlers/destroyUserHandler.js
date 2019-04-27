@@ -4,7 +4,7 @@ const { logger, parseMessage, errorHandler, response } = require('../utils')
 const COMMUNICATION = require('../models/Communication')
 
 const handler = async (originalMessage) => {
-  const msg = parseMessage(originalMessage);
+  const msg = parseMessage(originalMessage)
 
   if (!msg) {
     await errorHandler.notifyErrorUpstream(
@@ -16,8 +16,8 @@ const handler = async (originalMessage) => {
   }
 
   try {
-    await destroyUser(msg.data.id);
-  } catch(e) {
+    await destroyUser(msg.data.id)
+  } catch (e) {
     logger.log({ level: 'error', message: `Something wrong happend during the users search, ${e}` })
     return
   }
@@ -43,7 +43,7 @@ const metadata = {
   handler,
   ...COMMUNICATION.DESTROY_USER
 }
-  
+
 module.exports = {
   handler,
   metadata
