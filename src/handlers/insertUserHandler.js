@@ -1,4 +1,3 @@
-const uuid = require('uuid/v4')
 const rabbit = require('../interfaces/rabbit')
 const { insertUser, destroyUser } = require('../repository/user')
 const { logger, parseMessage, errorHandler, response } = require('../utils')
@@ -38,17 +37,17 @@ const handler = async (originalMessage) => {
 
   if (!msg) {
     await errorHandler.notifyErrorUpstream(
-      `Malformed message from: ${COMMUNICATION.FIND_ONE_USER.EXCHANGE}`,
+      `Malformed message from: ${COMMUNICATION.FIND_ONE_USER.REQUEST_TOPIC}`,
       'MALFORMED_MESSAGE',
       originalMessage
     )
     return
   }
 
-  let user
+  let userId
 
   try {
-    user = await insertUser(msg.data)
+    userId = await insertUser(msg.data)
   } catch (e) {
     logger.log({ level: 'error', message: `Something wrong happend with Database Insertion, ${e}` })
     await errorHandler.resolveThroughNackAndRequeue(originalMessage)
@@ -56,14 +55,16 @@ const handler = async (originalMessage) => {
   }
 
   try {
-    rabbit.publish(COMMUNICATION.INSERT_USER.EXCHANGE, response(), originalMessage.fields.routingKey)
+    rabbit.publish(COMMUNICATION.INSERT_USER.RESPONSE_TOPIC, response(), originalMessage.fields.routingKey)
   } catch (e) {
     logger.log({ level: 'error', message: `Can not publish message, ${e}` })
-    rollback(originalMessage, user.id, e)
+    rollback(originalMessage, userId, e)
     return
   }
 
   rabbit.ack(originalMessage)
+
+  logger.log({ level: 'error', message: `Message ack.` })
 }
 
 const metadata = {

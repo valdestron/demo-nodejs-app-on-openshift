@@ -8,7 +8,7 @@ const handler = async (originalMessage) => {
 
   if (!msg) {
     await errorHandler.notifyErrorUpstream(
-      `Malformed message from: ${COMMUNICATION.FIND_ONE_USER.EXCHANGE}`,
+      `Malformed message from: ${COMMUNICATION.FIND_ONE_USER.REQUEST_TOPIC}`,
       'MALFORMED_MESSAGE',
       originalMessage
     )
@@ -26,11 +26,11 @@ const handler = async (originalMessage) => {
   }
 
   try {
-    rabbit.publish(COMMUNICATION.FIND_ONE_USER.EXCHANGE, response(user), originalMessage.fields.routingKey)
+    rabbit.publish(COMMUNICATION.FIND_ONE_USER.RESPONSE_TOPIC, response(user), originalMessage.fields.routingKey)
   } catch (e) {
     logger.log({ level: 'error', message: `Can not publish message, ${e}` })
     await errorHandler.notifyErrorUpstream(
-      `Failed to publish message, ${COMMUNICATION.FIND_ONE_USER.EXCHANGE}`,
+      `Failed to publish message, ${COMMUNICATION.FIND_ONE_USER.REQUEST_TOPIC}`,
       'RABBIT_MQ_ERROR',
       originalMessage,
       e,
@@ -40,6 +40,8 @@ const handler = async (originalMessage) => {
   }
 
   rabbit.ack(originalMessage)
+
+  logger.log({ level: 'error', message: `Message ack.` })
 }
 
 const metadata = {
