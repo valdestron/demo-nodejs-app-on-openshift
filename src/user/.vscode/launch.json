@@ -8,13 +8,7 @@
         "type": "node",
         "request": "launch",
         "name": "User MS",
-        "program": "${workspaceFolder}/src/server.js"
-      },
-      {
-        "type": "node",
-        "request": "launch",
-        "name": "Api Gateway",
-        "program": "${workspaceFolder}/anti-human-cd-api-gateway/src/server.js"
+        "program": "${workspaceFolder}/src/shipping/user/server.js"
       },
     ]
   }
