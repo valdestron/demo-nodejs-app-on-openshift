@@ -16,4 +16,6 @@ An example app to be deployed in OpenShift cluster. This app will be part of "Ex
 - Clone
 - `docker-compose -f docker-compose.all.yml up -d` - will start everything and app can be accessed by `http://localhost:3002`
 - To run migrations and seeds: `cd src/user && yarn migrations && yarn seeds`
-- To run integration tests `cd src/testsuit && yarn test`
+- To run APP unit tests `cd src/user-manager && yarn test`
+- To run API unit tests `cd src/user && yarn test`
+- To run API integration tests `cd src/testsuit && yarn test`
