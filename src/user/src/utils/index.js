@@ -1,7 +1,6 @@
 module.exports = {
   logger: require('./logger'),
-  parseMessage: require('./parseMessage'),
-  errorHandler: require('./errorHandler'),
+  reqLogger: require('./req-logger'),
   response: require('./response')
 }
 

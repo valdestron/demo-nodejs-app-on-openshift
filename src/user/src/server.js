@@ -1,18 +1,49 @@
-require('./utils/env')
-const { logger } = require('./utils')
-const rabbit = require('./interfaces/rabbit')
-const db = require('./interfaces/sql')
-const { findAllUsersHandler, findOneUserHandler, insertUserHandler, destroyUserHandler } = require('./handlers')
+const logger = require('./utils/logger').get()
+const { reqLogger } = require('./utils')
+const { general } = require('./configuration')
+const http = require('http')
+const cors = require('cors')
+const express = require('express')
+const bodyParser = require('body-parser')
+const routes = require('./routes')
+const { handleException } = require('./utils/exceptionHandlers')
 
-Promise.all([rabbit.openConnection(), db.openConnection()])
-  .then(() => {
-    rabbit.registerConsumers([findAllUsersHandler.metadata, findOneUserHandler.metadata, insertUserHandler.metadata, destroyUserHandler.metadata])
-    logger.log({
-      level: 'info',
-      message: 'DevDays User MS Connected to RabbitMQ...'
-    })
-  })
-  .catch((err) => {
-    logger.log({ level: 'error', message: `${err.message} - ${err.stack}` })
-    process.exit(1)
-  })
+const corsOptions = {
+  origin: (origin, callback) => {
+    callback(null, true)
+  },
+  credentials: true
+}
+
+/**
+ * @returns {Object} returns loaded express app
+ */
+async function loadServer() {
+  const app = express()
+
+  app.use(cors(corsOptions))
+  app.use(reqLogger)
+  app.use(bodyParser.json())
+  app.use(bodyParser.urlencoded({
+    extended: true
+  }))
+
+  routes(app)
+
+  const server = http.createServer(app)
+
+  server.on('error', handleException)
+  server.on('close', () => logger.info(`Http server closed...`))
+  server.listen(
+    general.appPort,
+    general.appHost,
+    () => logger.info(`http - ${general.appHost}:${general.appPort} - listening for http requests.`)
+  )
+
+  return server
+}
+
+
+module.exports = {
+  loadServer
+}

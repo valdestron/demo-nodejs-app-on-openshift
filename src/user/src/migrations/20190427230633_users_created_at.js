@@ -1,6 +1,6 @@
 const schemaUp = (t, k) => {
-  t.dateTime('createdAt').defaultTo(k.raw('CURRENT_TIMESTAMP'))
-  t.timestamp('updatedAt').defaultTo(k.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
+  t.timestamp('createdAt').notNullable().defaultTo(k.raw('CURRENT_TIMESTAMP'))
+  t.timestamp('updatedAt').notNullable().defaultTo(k.raw('CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP'))
 }
 
 exports.up = function(knex, Promise) {

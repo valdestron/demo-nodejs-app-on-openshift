@@ -1,7 +1,7 @@
 const Knex = require('knex')
 const { Model } = require('objection')
 const { database } = require('../configuration')
-const { logger } = require('../utils')
+const logger = require('../utils/logger').get()
 
 /**
  * Connection to database
@@ -23,24 +23,17 @@ const openConnection = () => {
     return connect()
       .then((conn) => {
         Model.knex(conn)
-        logger.log({
-          level: 'info',
-          message: `Connection to Database established successfully...`
-        })
+        logger.info(`Connection to Database established successfully...`)
         resolve(conn)
       })
       .catch((err) => {
-        logger.log({
-          level: 'error',
-          message: `Failed connect to database, reconnecting... ${JSON.stringify(
-            err
-          )}`
-        })
+        logger.error(`Failed connect to database, reconnecting... ${JSON.stringify(err)}`)
         setTimeout(() => resolve(openConnection()), database.retryInterval)
       })
   })
 }
 
 module.exports = {
+  connect,
   openConnection
 }

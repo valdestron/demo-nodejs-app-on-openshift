@@ -1,0 +1,11 @@
+--file src/__test__/mocha.env.js
+--file src/__test__/mocha.migrate.js
+src/__test__
+--recursive 
+--bail 
+--check-leaks 
+--globals __core-js_shared__ 
+--full-trace 
+--use_strict 
+--exit
+--timeout 60000

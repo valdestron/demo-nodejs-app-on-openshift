@@ -1,11 +1,5 @@
 version: '3.7'
 services:
-  bridge:
-    image: broen-gateway
-    ports:
-      - "8081:7083"
-    links:
-      - rabbitmq
   db:
     image: mysql
     restart: always
@@ -14,17 +8,10 @@ services:
       MYSQL_ROOT_PASSWORD: root
     volumes:
       - type: bind
-        source: /docker-entrypoint-initdb.d
+        source: ./src/user/docker-entrypoint-initdb.d
         target: /docker-entrypoint-initdb.d
     ports:
     - "3306:3306"
-  rabbitmq:
-    image: rabbitmq:management-alpine
-    ports:
-      - "15672:15672"
-      - "5672:5672"
-    environment:
-      RABBITMQ_DEFAULT_VHOST: dev_vhost
   adminer:
     image: adminer
     restart: always
