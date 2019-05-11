@@ -1,4 +1,4 @@
-# Demo for DevDays talk - Anti Human App
+# Anti Human App - Demo for DevDays talk
 An example app to be deployed in OpenShift cluster. This app will be part of "Exclude Human - Continuous Deployment and OpenShift" talk.
 
 # Characteristics
