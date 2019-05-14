@@ -7,14 +7,13 @@ RUN apk add --update git && \
   rm -rf /tmp/* /var/cache/apk/*
 
 WORKDIR /app
-COPY package*.json /app/
+COPY ./ /app/
 
 RUN npm install
-COPY ./ /app/
 
 ARG REACT_APP_API_URI
 ENV REACT_APP_API_URI ${REACT_APP_API_URI}
-
+RUN ls -la
 RUN npm run build
 
 # Setup Reverse Proxy
