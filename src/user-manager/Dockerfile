@@ -7,8 +7,8 @@ RUN apk add --update git && \
   rm -rf /tmp/* /var/cache/apk/* && \
   mkdir /app
 
-WORKDIR /app
 COPY ./ /app/
+WORKDIR /app
 
 RUN npm install
 
