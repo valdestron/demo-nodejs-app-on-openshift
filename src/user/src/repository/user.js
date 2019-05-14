@@ -1,4 +1,3 @@
-const moment = require('moment')
 const bcrypt = require('bcryptjs')
 const User = require('../models/User')
 
@@ -7,7 +6,7 @@ const findById = async (id) => {
     .query()
     .where('id', id)
     .first()
-    .select('username', 'updatedAt', 'id', 'createdAt')
+    .select('username', 'name', 'id')
 }
 
 const insertUser = async (data) => {
@@ -15,9 +14,8 @@ const insertUser = async (data) => {
     .query()
     .insert({
       username: data.username,
+      name: data.name,
       password: bcrypt.hashSync(data.password, 10),
-      createdAt: moment(new Date()).format('YYYY-MM-DD HH:mm:ss'),
-      updatedAt: moment(new Date()).format('YYYY-MM-DD HH:mm:ss')
     })
     .returning('id')
 }
@@ -32,7 +30,7 @@ const destroyUser = async (id) => {
 const getUsers = async () => {
   return await User
     .query()
-    .select('username', 'updatedAt', 'id', 'createdAt')
+    .select('username', 'name', 'id')
 }
 
 module.exports = {

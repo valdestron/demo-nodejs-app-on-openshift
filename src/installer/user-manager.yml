@@ -194,7 +194,7 @@ objects:
         - name: default
           port: 80
           protocol: TCP
-          targetPort: 3003
+          targetPort: 30030
       selector:
         deploymentconfig: ${APP_NAME}-api
 parameters:

@@ -12,8 +12,7 @@ export default function UserList(props) {
         <tr>
           <th>Id</th>
           <th>Username</th>
-          <th>Created At</th>
-          <th>Updated At</th>
+          <th>Name</th>
           <th>Action</th>
         </tr>
       </thead>
@@ -22,8 +21,7 @@ export default function UserList(props) {
           return <tr key={key} className={props.deleting === userData.id ? 'deleted-line' : ''}>
             <td>{userData.id}</td>
             <td>{userData.username}</td>
-            <td>{userData.createdAt}</td>
-            <td>{userData.updatedAt}</td>
+            <td>{userData.name}</td>
             <td><Button color={'danger'} onClick={() => props.delete(userData.id)}>{props.deleting ? 'Deleting...' : 'Delete'}</Button></td>
           </tr>
         })}

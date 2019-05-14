@@ -7,7 +7,8 @@ describe('User DAO', () => {
 
   const newUser = {
     username: 'test',
-    password: 'test'
+    password: 'test',
+    name: 'test'
   }
 
   describe('getUsers() query', () => {
@@ -16,19 +17,17 @@ describe('User DAO', () => {
       users.should.be.an('array')
       users[0].id.should.exist
       users[0].username.should.exist
-      users[0].createdAt.should.exist
-      users[0].updatedAt.should.exist
+      users[0].name.should.exist
     })
   })
 
   describe('insertUser(data) query', () => {
     it('should able to insert user with correct data', async () => {
-      const { username, updatedAt, id, createdAt } = await insertUser(newUser)
+      const { username, name, id } = await insertUser(newUser)
 
       username.should.exist
       id.should.exist
-      updatedAt.should.exist
-      createdAt.should.exist
+      name.should.exist
     })
 
     it('should throw if data incorrect', async () => {
@@ -58,16 +57,14 @@ describe('User DAO', () => {
       }
     })
 
-    it('should be not able to destroy user with invalid id', async () => {
-      let error
+    it('should not be able to destroy user with invalid id', async () => {
+      let result
 
       try {
-        await destroyUser('NaN')
-      } catch (e) {
-        error = e
-      }
-
-      error.should.exist
+        result = await destroyUser('NaN')
+      // eslint-disable-next-line no-empty
+      } catch (e) {}
+      expect(result).to.be.undefined
     })
   })
 

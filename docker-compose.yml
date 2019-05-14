@@ -3,20 +3,20 @@ services:
   app:
     build: ./src/user-manager
     ports:
-      - "3002:80"
+      - "30020:80"
     depends_on:
       - api
   api:
     build: ./src/user
     environment:
-      APP_PORT: '3003'
+      APP_PORT: '30030'
       APP_HOST: '0.0.0.0'
       MYSQL_HOST: mysql
       MYSQL_DATABASE: users
       MYSQL_PASSWORD: root
       MYSQL_USER: root
     ports:
-      - "3003:3003"
+      - "30030:30030"
     depends_on:
       - mysql
     command: ["sh", "-c", "./wait-for-mysql.sh mysql && npm run migrations && npm run seeds && npm start"]

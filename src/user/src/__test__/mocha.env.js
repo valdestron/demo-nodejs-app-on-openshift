@@ -1,1 +1,1 @@
-process.env.NODE_ENV = 'in_memory'
+process.env.NODE_ENV = 'memory'

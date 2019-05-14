@@ -4,13 +4,12 @@ const defaultDatabaseConfig = {
   client: 'mysql',
   useNullAsDefault: true,
   retryInterval: process.env.DATABASE_RETRY_INTERVAL || 5000,
-  connection: 'mysql://root:root@localhost:3306/users',
-  // connection: {
-  //   host: process.env.MYSQL_HOST || '127.0.0.1',
-  //   user: process.env.MYSQL_USER || 'root',
-  //   password: process.env.MYSQL_PASSWORD || 'root',
-  //   database: process.env.MYSQL_DATABASE || 'users',
-  // },
+  connection: {
+    host: process.env.MYSQL_HOST || '127.0.0.1',
+    user: process.env.MYSQL_USER || 'root',
+    password: process.env.MYSQL_PASSWORD || 'root',
+    database: process.env.MYSQL_DATABASE || 'users',
+  },
   pool: {
     min: 2,
     max: 10
@@ -35,7 +34,7 @@ const unitTestDatabaseConfig = {
 const unitTestInMemoryDatabaseConfig = {
   ...defaultDatabaseConfig,
   client: 'sqlite3',
-  connection: ':memory:',
+  connection: { filename: 'sqliteInMemory:inMemoryDb?mode=memory&cache=shared' },
   pool: {
     min: 1,
     max: 1,
@@ -53,7 +52,7 @@ const unitTestInMemoryDatabaseConfig = {
 
 let config = defaultDatabaseConfig
 
-if (process.env.NODE_ENV === 'in_memory') {
+if (process.env.NODE_ENV === 'memory') {
   config = unitTestInMemoryDatabaseConfig
 }
 

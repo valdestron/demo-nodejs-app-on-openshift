@@ -8,7 +8,6 @@ const logger = require('../utils/logger').get()
  * @returns {Promise} Connection promise
  */
 async function connect() {
-  console.log(database)
   const knex = Knex(database)
 
   try {

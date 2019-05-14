@@ -1,13 +1,13 @@
-if (process.env.NODE_ENV !== 'in_memory' && process.env.NODE_ENV !== 'test') {
+if (process.env.NODE_ENV !== 'memory' && process.env.NODE_ENV !== 'test') {
   throw new Error(
-    'process.env.NODE_ENV is not one of test environments: in_memory or test'
+    'process.env.NODE_ENV is not one of test environments: in memory or test'
   )
 }
 
 before(async () => {
   const { database } = require('../configuration')
-  //const { connect, openConnection } = require('../interfaces/sql')
-  const { connect } = require('../interfaces/sql')
+  const { connect, openConnection } = require('../interfaces/sql')
+  //const { connect } = require('../interfaces/sql')
   const sqlite3 = require('sqlite3').verbose()
   new sqlite3.Database(':memory:')
 
@@ -22,7 +22,7 @@ before(async () => {
   await knex.migrate.rollback(database, true)
   await knex.migrate.latest(database)
   await knex.seed.run(database)
-  //await openConnection()
+  await openConnection()
 
   // eslint-disable-next-line no-console
   console.log(
