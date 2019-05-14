@@ -17,7 +17,7 @@ async function start() {
     await loadServer()
   } catch (e) {
     logger.error(`App can not be started...${e}`)
-    return
+    return;
   }
 }
 

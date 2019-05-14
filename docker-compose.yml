@@ -1,5 +1,22 @@
 version: '3.7'
 services:
+  app:
+    build: ./src/user-manager
+    ports:
+      - "3002:80"
+    depends_on:
+      - api
+  api:
+    build: ./src/user
+    environment:
+      APP_PORT: '3003'
+      APP_HOST: '0.0.0.0'
+      DATABASE_CONN_STR: mysql://root:root@db/users
+    ports:
+      - "3003:3003"
+    depends_on:
+      - db
+    command: ["sh", "-c", "./wait-for-mysql.sh db && npm run migrations && npm run seeds && npm start"]
   db:
     image: mysql
     restart: always

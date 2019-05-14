@@ -1,0 +1,222 @@
+kind: Template
+apiVersion: v1
+metadata:
+  name: user-manager
+  annotations:
+    openshift.io/display-name: User Manager App Frontend
+    tags: user-manager
+labels:
+  template: user-manager
+  app: user-manager
+objects:
+# APP Resources
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-app
+      labels:
+        app: ${APP_NAME}
+    status:
+      dockerImageRepository: ''
+  - kind: ImageStream
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-api
+      labels:
+        app: ${APP_NAME}
+    status:
+      dockerImageRepository: ''
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-app
+      labels:
+        app: ${APP_NAME}
+    spec:
+      source:
+        type: Git
+        git:
+          uri: ${GIT_URL}
+          ref: ${BRANCH}
+        contextDir: ${DIRECTORY}/user-manager
+        sourceSecret:
+          name: ${GIT_SSH}
+      triggers: []
+      strategy:
+        type: Source
+        sourceStrategy:
+          forcePull: true
+          from:
+            kind: DockerImage
+            name: '${NODEJS_S2I}'
+      output:
+        to:
+          kind: ImageStreamTag
+          name: '${APP_NAME}-app:${TAG}'
+  - kind: BuildConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-api
+      labels:
+        app: ${APP_NAME}
+    spec:
+      source:
+        type: Git
+        git:
+          uri: ${GIT_URL}
+          ref: ${BRANCH}
+        contextDir: ${DIRECTORY}/user
+        sourceSecret:
+          name: ${GIT_SSH}
+      triggers: []
+      strategy:
+        type: Source
+        sourceStrategy:
+          forcePull: true
+          from:
+            kind: DockerImage
+            name: '${NODEJS_S2I}'
+      output:
+        to:
+          kind: ImageStreamTag
+          name: '${APP_NAME}-api:${TAG}'
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-api
+    spec:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            name: ${APP_NAME}
+        spec:
+          containers:
+            - name: ${APP_NAME}-api
+              image: ${APP_NAME}-api:${TAG}
+      triggers:
+        - type: ImageChange
+          imageChangeParams:
+            automatic: false
+            from:
+              kind: ImageStreamTag
+              name: '${APP_NAME}-api:${TAG}'
+            containerNames:
+              - user-manager-api
+        - type: ConfigChange
+      strategy:
+        type: Rolling
+  - kind: DeploymentConfig
+    apiVersion: v1
+    metadata:
+      name: ${APP_NAME}-app
+    spec:
+      replicas: 1
+      template:
+        metadata:
+          labels:
+            name: ${APP_NAME}
+        spec:
+          containers:
+            - name: ${APP_NAME}-app
+              image: ${APP_NAME}-app:${TAG}
+            env:
+              - name: REACT_APP_API_URI
+                value: ${APP_NAME}-api
+      triggers:
+        - type: ImageChange
+          imageChangeParams:
+            automatic: false
+            from:
+              kind: ImageStreamTag
+              name: '${APP_NAME}-app:${TAG}'
+            containerNames:
+              - user-manager-app
+        - type: ConfigChange
+      strategy:
+        type: Rolling
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: ${APP_NAME}-app
+    spec:
+      ports:
+        - name: default
+          port: 80
+          protocol: TCP
+          targetPort: 3002
+      selector:
+        deploymentconfig: ${APP_NAME}-app
+  - kind: Service
+    apiVersion: v1
+    metadata:
+      labels:
+        app: ${APP_NAME}
+      name: ${APP_NAME}-api
+    spec:
+      ports:
+        - name: default
+          port: 80
+          protocol: TCP
+          targetPort: 3003
+      selector:
+        deploymentconfig: ${APP_NAME}-api
+# DATABASE
+- kind: PersistentVolumeClaim
+  apiVersion: v1
+  metadata:
+    annotations:
+      pv.kubernetes.io/bind-completed: "yes"
+      pv.kubernetes.io/bound-by-controller: "yes"
+    creationTimestamp: null
+    finalizers:
+    - kubernetes.io/pvc-protection
+    labels:
+      app: ${APP_NAME}
+      template: ${APP_NAME}
+    name: mysql
+  spec:
+    accessModes:
+    - ReadWriteOnce
+    resources:
+      requests:
+        storage: 2Gi
+- kind: Service
+  apiVersion: v1
+  metadata:
+    annotations:
+      template.openshift.io/expose-uri: mysql://{.spec.clusterIP}:{.spec.ports[?(.name=="mysql")].port}
+    creationTimestamp: null
+    labels:
+      app: user-manager
+      template: user-manager
+    name: mysql
+  spec:
+    ports:
+    - name: mysql
+      port: 3306
+      protocol: TCP
+      targetPort: 3306
+    selector:
+      name: mysql
+    sessionAffinity: None
+    type: ClusterIP
+parameters:
+  - name: APP_NAME
+    value: user-manager
+  - name: NODEJS_S2I
+    value: bucharestgold/centos7-s2i-nodejs
+  - name: GIT_URL
+    value: git@github.com:valdestron/demo-nodejs-app-on-openshift.git
+  - name: BRANCH
+    value: master
+  - name: GIT_SSH
+    value: git
+  - name: SOURCE_DIRECTORY
+    value: 'src/user-manager'
+  - name: TAG
+    value: '0.0.0'
+  - name: DIRECTORY
+    value: src

@@ -1,0 +1,64 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: user-manager-pipeline
+parameters:
+  - name: GIT_URL
+    value: git@github.com:valdestron/demo-nodejs-app-on-openshift.git
+  - name: BRANCH
+    value: master
+  - name: GIT_SSH
+    value: git
+  - name: APP_NAME
+    value: user-manager
+  - name: VERSION_FILE
+    value: VERSION
+  - name: TEMPLATE
+    value: src/infra/user-manager-tmplate.yml
+  - name: DEV_PROJECT
+    value: user-manager-dev
+  - name: TEST_PROJECT
+    value: user-manager-test
+  - name: PROD_PROJECT
+    value: user-manager
+  - name: WEBHOOK
+    generate: expression
+    from: '[a-zA-Z0-9]{40}'
+objects:
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: user-manager-pipeline
+    spec:
+      triggers:
+        - type: Generic
+          generic:
+            secret: '${WEBHOOK}'
+      source:
+        type: 'Git'
+        git:
+          uri: ${GIT_URL}
+          ref: ${BRANCH}
+        sourceSecret:
+          name: ${GIT_SSH}
+      strategy:
+        type: 'JenkinsPipeline'
+        jenkinsPipelineStrategy:
+          env:
+            - name: GIT_URL
+              value: '${GIT_URL}'
+            - name: GIT_SSH
+              value: '${GIT_SSH}'
+            - name: APP_NAME
+              value: '${APP_NAME}'
+            - name: VERSION_FILE
+              value: '${VERSION_FILE}'
+            - name: TEMPLATE
+              value: '${TEMPLATE}'
+            - name: DEV_PROJECT
+              value: '${DEV_PROJECT}'
+            - name: TEST_PROJECT
+              value: '${TEST_PROJECT}'
+            - name: PROD_PROJECT
+              value: '${PROD_PROJECT}'
+          jenkinsfilePath: src/infra/Jenkinsfile
