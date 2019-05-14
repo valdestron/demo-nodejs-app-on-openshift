@@ -6,11 +6,14 @@ LABEL authors="Valdas Mazrimas <valdas.mazrimas@gmail.com>"
 RUN apk add --update git && \
   rm -rf /tmp/* /var/cache/apk/*
 
-WORKDIR /app
-COPY ./* /app/
+WORKDIR /ap
+
+COPY ./src /app/src
+COPY ./public /app/public
+COPY ./package.json /app/
+COPY ./yarn.lock /app/
 
 RUN npm install
-RUN ls -la
 
 ARG REACT_APP_API_URI
 ENV REACT_APP_API_URI ${REACT_APP_API_URI}

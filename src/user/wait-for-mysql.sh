@@ -9,7 +9,7 @@ cmd="$@"
 
 until nc -z -v -w30 $host 3306
 do
-  echo "Waiting for database connection..."
+  echo "Waiting for mysql Database availablity..."
   sleep 1
 done
 

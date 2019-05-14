@@ -25,33 +25,6 @@ objects:
         app: ${APP_NAME}
     status:
       dockerImageRepository: ''
-  # - kind: BuildConfig
-  #   apiVersion: v1
-  #   metadata:
-  #     name: ${APP_NAME}-app
-  #     labels:
-  #       app: ${APP_NAME}
-  #   spec:
-  #     source:
-  #       type: Git
-  #       git:
-  #         uri: ${GIT_URL}
-  #         ref: ${BRANCH}
-  #       contextDir: ${DIRECTORY}/user-manager
-  #       sourceSecret:
-  #         name: ${GIT_SSH}
-  #     triggers: []
-  #     strategy:
-  #       type: Source
-  #       sourceStrategy:
-  #         forcePull: true
-  #         from:
-  #           kind: DockerImage
-  #           name: '${NODEJS_S2I}'
-  #     output:
-  #       to:
-  #         kind: ImageStreamTag
-  #         name: '${APP_NAME}-app:${TAG}'
   - kind: BuildConfig
     apiVersion: build.openshift.io/v1
     metadata:
@@ -127,6 +100,12 @@ objects:
           containers:
             - name: ${APP_NAME}-api
               image: ${APP_NAME}-api:${TAG}
+              command:
+                - sh
+                - '-c'
+                - >-
+                  ./wait-for-mysql.sh mysql && npm run migrations && npm run seeds &&
+                  npm start
               env:
                 - name: MYSQL_USER
                   valueFrom:
@@ -176,7 +155,7 @@ objects:
               image: ${APP_NAME}-app:${TAG}
               env:
                 - name: REACT_APP_API_URI
-                  value: ${API_SERVICE_NAME}
+                  value: ${APP_NAME}-api
       triggers:
         - type: ImageChange
           imageChangeParams:
@@ -198,9 +177,9 @@ objects:
     spec:
       ports:
         - name: default
-          port: 80
+          port: 8080
           protocol: TCP
-          targetPort: 3002
+          targetPort: 80
       selector:
         deploymentconfig: ${APP_NAME}-app
   - kind: Service
@@ -208,7 +187,7 @@ objects:
     metadata:
       labels:
         app: ${APP_NAME}
-      name: ${API_SERVICE_NAME}
+      name: ${APP_NAME}-api
     spec:
       ports:
         - name: default
@@ -236,5 +215,3 @@ parameters:
     value: src
   - name: DATABASE_SERVICE_NAME
     value: mysql
-  - name: API_SERVICE_NAME
-    value: user-manager-api

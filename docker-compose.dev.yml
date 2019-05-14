@@ -5,7 +5,11 @@ services:
     restart: always
     command: --default-authentication-plugin=mysql_native_password
     environment:
+      MYSQL_HOST: mysql
+      MYSQL_DATABASE: users
       MYSQL_ROOT_PASSWORD: root
+      MYSQL_PASSWORD: root
+      MYSQL_USER: root
     volumes:
       - type: bind
         source: ./src/user/docker-entrypoint-initdb.d

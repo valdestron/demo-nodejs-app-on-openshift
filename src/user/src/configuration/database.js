@@ -4,7 +4,12 @@ const defaultDatabaseConfig = {
   client: 'mysql',
   useNullAsDefault: true,
   retryInterval: process.env.DATABASE_RETRY_INTERVAL || 5000,
-  connection: process.env.DATABASE_CONN_STR || 'mysql://root:root@localhost:3306/users',
+  connection: {
+    host: process.env.MYSQL_HOST || 'localhost',
+    user: process.env.MYSQL_USER || 'root',
+    password: process.env.MYSQL_PASSWORD || 'root',
+    database: process.env.MYSQL_DATABASE || 'users'
+  },
   pool: {
     min: 2,
     max: 10
@@ -35,8 +40,8 @@ const unitTestInMemoryDatabaseConfig = {
   pool: {
     min: 1,
     max: 1,
-    disposeTimeout: 360000*1000,
-    idleTimeoutMillis: 360000*1000
+    disposeTimeout: 360000 * 1000,
+    idleTimeoutMillis: 360000 * 1000
   },
   isTest: true,
   migrations: {
