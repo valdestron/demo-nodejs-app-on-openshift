@@ -26,6 +26,6 @@ before(async () => {
 
   // eslint-disable-next-line no-console
   console.log(
-    `All migrations and seed data was resetted in ${database.connection}`
+    `All migrations and seed data was resetted in ${JSON.stringify(database.connection)}`
   )
 })
