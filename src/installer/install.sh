@@ -30,6 +30,7 @@ setup_projects() {
 
 setup_git_ssh() {
   echo "------------------------------------ Git SSH Key ${project}"
+  oc project $project-dev
   yes "y" | ssh-keygen -C "openshift-source-builder/repo@github" -f repo-at-github -N '' >/dev/null
   secret=$(sed "s/ssh-privatekey:.*/ssh-privatekey: $(cat repo-at-github | base64)/" repo-at-github.yml)
   echo "${secret}" > repo-at-github.yml

@@ -53,6 +53,7 @@ objects:
           from:
             kind: ImageStreamTag
             name: nginx:alpine
+            namespace: openshift
         type: Docker
       successfulBuildsHistoryLimit: 5
       triggers:

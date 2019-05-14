@@ -1,7 +1,7 @@
 # User Manager Demo APP for DevDays speach
 An example app to be deployed in OpenShift cluster. This app will be part of "Exclude Human - Continuous Deployment and OpenShift" talk.
 
-How to install on your local minishift [minishift](./installer)
+How to install on your local [minishift](./src/installer)
 
 # Characteristics
 - Can be installed in OpenShift/Minishift v3.11

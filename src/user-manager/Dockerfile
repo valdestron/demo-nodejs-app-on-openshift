@@ -6,7 +6,7 @@ LABEL authors="Valdas Mazrimas <valdas.mazrimas@gmail.com>"
 RUN apk add --update git && \
   rm -rf /tmp/* /var/cache/apk/*
 
-WORKDIR /ap
+WORKDIR /app
 
 COPY ./src /app/src
 COPY ./public /app/public
