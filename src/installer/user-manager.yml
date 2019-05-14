@@ -9,7 +9,6 @@ labels:
   template: user-manager
   app: user-manager
 objects:
-# APP Resources
   - kind: ImageStream
     apiVersion: v1
     metadata:
@@ -94,6 +93,27 @@ objects:
           containers:
             - name: ${APP_NAME}-api
               image: ${APP_NAME}-api:${TAG}
+              env:
+                - name: MYSQL_USER
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-user
+                      name: "${DATABASE_SERVICE_NAME}"
+                - name: MYSQL_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-password
+                      name: "${DATABASE_SERVICE_NAME}"
+                - name: MYSQL_ROOT_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-root-password
+                      name: "${DATABASE_SERVICE_NAME}"
+                - name: MYSQL_DATABASE
+                  valueFrom:
+                    secretKeyRef:
+                      key: database-name
+                      name: "${DATABASE_SERVICE_NAME}"
       triggers:
         - type: ImageChange
           imageChangeParams:
@@ -120,9 +140,9 @@ objects:
           containers:
             - name: ${APP_NAME}-app
               image: ${APP_NAME}-app:${TAG}
-            env:
-              - name: REACT_APP_API_URI
-                value: ${APP_NAME}-api
+              env:
+                - name: REACT_APP_API_URI
+                  value: ${API_SERVICE_NAME}
       triggers:
         - type: ImageChange
           imageChangeParams:
@@ -154,7 +174,7 @@ objects:
     metadata:
       labels:
         app: ${APP_NAME}
-      name: ${APP_NAME}-api
+      name: ${API_SERVICE_NAME}
     spec:
       ports:
         - name: default
@@ -163,46 +183,6 @@ objects:
           targetPort: 3003
       selector:
         deploymentconfig: ${APP_NAME}-api
-# DATABASE
-- kind: PersistentVolumeClaim
-  apiVersion: v1
-  metadata:
-    annotations:
-      pv.kubernetes.io/bind-completed: "yes"
-      pv.kubernetes.io/bound-by-controller: "yes"
-    creationTimestamp: null
-    finalizers:
-    - kubernetes.io/pvc-protection
-    labels:
-      app: ${APP_NAME}
-      template: ${APP_NAME}
-    name: mysql
-  spec:
-    accessModes:
-    - ReadWriteOnce
-    resources:
-      requests:
-        storage: 2Gi
-- kind: Service
-  apiVersion: v1
-  metadata:
-    annotations:
-      template.openshift.io/expose-uri: mysql://{.spec.clusterIP}:{.spec.ports[?(.name=="mysql")].port}
-    creationTimestamp: null
-    labels:
-      app: user-manager
-      template: user-manager
-    name: mysql
-  spec:
-    ports:
-    - name: mysql
-      port: 3306
-      protocol: TCP
-      targetPort: 3306
-    selector:
-      name: mysql
-    sessionAffinity: None
-    type: ClusterIP
 parameters:
   - name: APP_NAME
     value: user-manager
@@ -220,3 +200,7 @@ parameters:
     value: '0.0.0'
   - name: DIRECTORY
     value: src
+  - name: DATABASE_SERVICE_NAME
+    value: mysql
+  - name: API_SERVICE_NAME
+    value: user-manager-api
