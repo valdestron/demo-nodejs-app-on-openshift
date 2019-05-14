@@ -4,11 +4,10 @@ FROM node:alpine as node
 LABEL authors="Valdas Mazrimas <valdas.mazrimas@gmail.com>"
 
 RUN apk add --update git && \
-  rm -rf /tmp/* /var/cache/apk/* && \
-  mkdir /app
-
-COPY ./ /app/
+  rm -rf /tmp/* /var/cache/apk/*
+RUN ls -la
 WORKDIR /app
+COPY ./ /app/
 
 RUN npm install
 
