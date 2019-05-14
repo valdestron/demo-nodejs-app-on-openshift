@@ -1,8 +1,10 @@
-# Anti Human App - Demo for DevDays talk
+# User Manager Demo APP for DevDays speach
 An example app to be deployed in OpenShift cluster. This app will be part of "Exclude Human - Continuous Deployment and OpenShift" talk.
 
+How to install on your local minishift [minishift](./installer)
+
 # Characteristics
-- Can be installed in any OpenShift/Minishift v3.11
+- Can be installed in OpenShift/Minishift v3.11
 - On PR, - PR Pipeline runs and preview environment is created in the configured OpenShift Cluster
 - On Merge to Master - Main Pipeline is triggered and if all tests and stages passes - deployed to production
 
