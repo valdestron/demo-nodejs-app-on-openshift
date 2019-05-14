@@ -4,7 +4,8 @@ FROM node:alpine as node
 LABEL authors="Valdas Mazrimas <valdas.mazrimas@gmail.com>"
 
 RUN apk add --update git && \
-  rm -rf /tmp/* /var/cache/apk/*
+  rm -rf /tmp/* /var/cache/apk/* && \
+  mkdir /app
 
 WORKDIR /app
 COPY ./ /app/
