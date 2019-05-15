@@ -254,7 +254,7 @@ def build() {
 
 @NonCPS
 def promote (project) {
-    openshift.project(project) {
+    openshift.withProject(project) {
         def templateExists = openshift.selector("template/${params.APP_NAME}").exists()
 
         if (templateExists) {
@@ -282,7 +282,7 @@ def promote (project) {
 
 @NonCPS
 def deploy (project) {
-    openshift.project(project) {
+    openshift.withProject(project) {
         def result = null
         def deployments = openshift.selector('dc', [ app: params.APP_NAME ])
         def deploymentObjects = deployments.objects()
