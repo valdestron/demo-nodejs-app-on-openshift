@@ -236,7 +236,7 @@ def promote (project) {
         openshift.apply(readFile(params.TEMPLATE))
 
         def processed = openshift.process(params.APP_NAME,
-            "-l app=${params.APP_NAME}"
+            "-l app=${params.APP_NAME}",
             "-p",
             "TAG=${config.tag}",
             "NAMESPACE=${params.DEV_PROJECT}")
