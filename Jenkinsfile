@@ -81,7 +81,7 @@ pipeline {
                 stage('Deploy DEV') {
                     steps {
                         script {
-                          deploy(paramas.DEV_PROJECT)
+                          deploy(params.DEV_PROJECT)
                         }
                     }
                 }
@@ -254,7 +254,7 @@ def deploy (project) {
         for (obj in deploymentObjects) {
             def image_name = "${project}/${params.APP_NAME}-${obj.metadata.labels.prefix}:${config.build_tag}"
 
-            if (obj.metadata.name == "${paramas.APP_NAME}-api")  { // hacky,...
+            if (obj.metadata.name == "${params.APP_NAME}-api")  { // hacky,...
                 obj.spec.template.spec.containers[1].image = imageName
             } else {
                 obj.spec.template.spec.containers[0].image = imageName
