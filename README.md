@@ -16,7 +16,7 @@ How to install on your local [minishift](./src/installer)
 
 # Local Development
 - Clone
-- `docker-compose up -d`
+- `docker-compose up -d` - and `http://localhost:30020`
 - To run migrations and seeds: `cd src/user && yarn migrations && yarn seeds`
 - To run APP unit tests `cd src/user-manager && yarn test`
 - To run API unit tests `cd src/user && yarn test`
