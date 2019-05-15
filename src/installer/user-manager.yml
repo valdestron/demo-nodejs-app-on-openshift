@@ -180,9 +180,9 @@ objects:
     spec:
       ports:
         - name: default
-          port: 8080
+          port: 80
           protocol: TCP
-          targetPort: 80
+          targetPort: 8080
       selector:
         deploymentconfig: ${APP_NAME}-app
   - kind: Route

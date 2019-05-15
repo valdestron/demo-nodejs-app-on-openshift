@@ -3,7 +3,7 @@ services:
   app:
     build: ./src/user-manager
     ports:
-      - "30020:80"
+      - "30020:8080"
     depends_on:
       - api
   api:
