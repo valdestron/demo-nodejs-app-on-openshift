@@ -1,3 +1,5 @@
+import com.cloudbees.groovy.cps.NonCPS
+
 config = [:]
 
 pipeline {
@@ -218,6 +220,7 @@ def build() {
   }
 }
 
+@NonCPS
 def promote (project) {
     openshift.project(project) {
         def templateExists = openshift.selector("template/${params.APP_NAME}").exists()
@@ -245,6 +248,7 @@ def promote (project) {
     }
 }
 
+@NonCPS
 def deploy (project) {
     openshift.project(project) {
         def result = null
