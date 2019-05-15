@@ -19,61 +19,61 @@ pipeline {
             }
         }
 
-        stage("Build, Test, Lint ....") {
-            failFast true
-            parallel {
-                stage('Unit') {
-                    steps {
-                        script {
-                            dir('src/user') {
-                              sh 'npm i'
-                              sh 'npm test'
-                              sh 'npm run coverage'
-                            }
-                        }
-                    }
-                    // do any kinds of post
-                    post {
-                      always {
-                        step([
-                            $class: 'CoberturaPublisher',
-                            autoUpdateHealth: false,
-                            autoUpdateStability: true,
-                            coberturaReportFile: '**/coverage/cobertura-coverage.xml', 
-                            failUnhealthy: false,
-                            failUnstable: true,
-                            maxNumberOfBuilds: 0,
-                            onlyStable: true,
-                            sourceEncoding: 'ASCII',
-                            zoomCoverageChart: false
-                        ])
-                      }
-                    }
-                }
+        // stage("Build, Test, Lint ....") {
+        //     failFast true
+        //     parallel {
+        //         stage('Unit') {
+        //             steps {
+        //                 script {
+        //                     dir('src/user') {
+        //                       sh 'npm i'
+        //                       sh 'npm test'
+        //                       sh 'npm run coverage'
+        //                     }
+        //                 }
+        //             }
+        //             // do any kinds of post
+        //             post {
+        //               always {
+        //                 step([
+        //                     $class: 'CoberturaPublisher',
+        //                     autoUpdateHealth: false,
+        //                     autoUpdateStability: true,
+        //                     coberturaReportFile: '**/coverage/cobertura-coverage.xml', 
+        //                     failUnhealthy: false,
+        //                     failUnstable: true,
+        //                     maxNumberOfBuilds: 0,
+        //                     onlyStable: true,
+        //                     sourceEncoding: 'ASCII',
+        //                     zoomCoverageChart: false
+        //                 ])
+        //               }
+        //             }
+        //         }
 
-                stage('Build') {
-                    steps {
-                        script {
-                            build()
-                        }
-                    }
-                }
-                stage('Package scanning') {
-                    steps {
-                        script {
-                            echo "should package scanning stage run here"
-                        }
-                    }
-                }
-                stage('Lint') {
-                    steps {
-                        script {
-                            echo "Should linting stage run here"
-                        }
-                    }
-                }
-            }
-        }
+        //         stage('Build') {
+        //             steps {
+        //                 script {
+        //                     build()
+        //                 }
+        //             }
+        //         }
+        //         stage('Package scanning') {
+        //             steps {
+        //                 script {
+        //                     echo "should package scanning stage run here"
+        //                 }
+        //             }
+        //         }
+        //         stage('Lint') {
+        //             steps {
+        //                 script {
+        //                     echo "Should linting stage run here"
+        //                 }
+        //             }
+        //         }
+        //     }
+        // }
 
         stage("Deploy DEV, TEST") {
             failFast true
@@ -155,7 +155,6 @@ pipeline {
     }
 }
 
-@NonCPS
 def configure() {
   echo "params ${params}"
   
@@ -170,7 +169,6 @@ def configure() {
   config.image_name_prefix = "${params.DEV_PROJECT}/${params.APP_NAME}"
 }
 
-@NonCPS
 def build() {
   openshift.withProject(params.DEV_PROJECT) {
     def builds = openshift.selector('bc', [ app: params.APP_NAME ])
@@ -220,7 +218,6 @@ def build() {
   }
 }
 
-@NonCPS
 def promote (project) {
     openshift.withProject(project) {
         def templateExists = openshift.selector("template/${params.APP_NAME}").exists()
@@ -248,7 +245,6 @@ def promote (project) {
     }
 }
 
-@NonCPS
 def deploy (project) {
     openshift.withProject(project) {
         def result = null
