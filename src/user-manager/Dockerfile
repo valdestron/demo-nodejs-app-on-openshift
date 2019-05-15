@@ -23,10 +23,9 @@ RUN npm run build
 # Setup Reverse Proxy
 FROM nginx:1.12
 
-RUN rm -rf /usr/share/nginx/html/*
-
-COPY --from=node /app/build/ /usr/share/nginx/html
-#COPY nginx.conf /etc/nginx/nginx.conf
+RUN rm -rf /opt/app-root/src/*
+COPY --from=node /app/build /opt/app-root/src/
+COPY nginx.conf /etc/nginx/nginx.conf
 
 EXPOSE 80
 
