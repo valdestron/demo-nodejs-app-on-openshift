@@ -82,6 +82,8 @@ objects:
             value: "${JNLP_SERVICE_NAME}"
           - name: GIT_SSL_NO_VERIFY
             value: 'true'
+          - name: INSTALL_PLUGINS
+            value: 'timestamper,cobertura,ssh-agent,bouncycastle-api'
           - name: ENABLE_FATAL_ERROR_LOG_FILE
             value: "${ENABLE_FATAL_ERROR_LOG_FILE}"
           image: "${JENKINS_IMAGE_STREAM_TAG}"

@@ -1,4 +1,4 @@
-def config = [:]
+config = [:]
 
 pipeline {
     agent {
