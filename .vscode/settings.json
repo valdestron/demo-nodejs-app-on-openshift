@@ -6,7 +6,7 @@
     "**/node_modules": false,
     "**/bower_components": true
   },
-  "window.zoomLevel": -1,
+  "window.zoomLevel": -2,
   "css.validate": false,
   "eslint.autoFixOnSave": true,
   "eslint.alwaysShowStatus": true,

@@ -61,4 +61,4 @@ objects:
               value: '${TEST_PROJECT}'
             - name: PROD_PROJECT
               value: '${PROD_PROJECT}'
-          jenkinsfilePath: src/infra/Jenkinsfile
+          jenkinsfilePath: Jenkinsfile
