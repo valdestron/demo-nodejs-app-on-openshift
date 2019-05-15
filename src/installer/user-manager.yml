@@ -185,6 +185,24 @@ objects:
           targetPort: 80
       selector:
         deploymentconfig: ${APP_NAME}-app
+  - kind: Route
+    metadata:
+      annotations:
+        openshift.io/host.generated: "true"
+      creationTimestamp: null
+      labels:
+        app: ${APP_NAME}
+        template: ${APP_NAME}
+      name: ${APP_NAME}-app
+    spec:
+      host: ${APP_NAME}-app-user-manager-dev.192.168.99.105.nip.io
+      port:
+        targetPort: default
+      to:
+        kind: Service
+        name: user-manager-app
+        weight: 100
+      wildcardPolicy: None
   - kind: Service
     apiVersion: v1
     metadata:
