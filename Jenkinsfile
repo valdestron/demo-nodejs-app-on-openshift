@@ -250,11 +250,15 @@ def deploy (project) {
             def image_name = "${project}/${params.APP_NAME}-${obj.metadata.labels.prefix}:${config.build_tag}"
             echo "${obj}"
             echo "${obj.metadata.name}"
+            
             if (obj.metadata.name == "${params.APP_NAME}-api")  { // hacky,...
                 obj.spec.template.spec.containers[1].image = image_name
-            } else {
+            }
+
+            if (obj.metadata.name == "${params.APP_NAME}-app")  { 
                 obj.spec.template.spec.containers[0].image = image_name
             }
+
             echo "deployment obj ${obj}"
             openshift.apply(obj)
         }

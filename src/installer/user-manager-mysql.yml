@@ -73,7 +73,6 @@ objects:
       template.alpha.openshift.io/wait-for-ready: 'true'
     name: "${DATABASE_SERVICE_NAME}"
     labels:
-      app: ${APP_NAME}
       template: ${APP_NAME}-mysql
   spec:
     replicas: 1
