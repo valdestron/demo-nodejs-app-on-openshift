@@ -98,15 +98,17 @@ objects:
           labels:
             name: ${APP_NAME}
         spec:
+          initContainers:
+            - name: init-mysql 
+              image: busybox
+              command: ['sh', '-c', 'until nc -z -v -w30 mysql 3306; do echo Waiting for mysql Database availability.; sleep 1; done;']
           containers:
             - name: ${APP_NAME}-api
               image: ${APP_NAME}-api:${TAG}
               command:
                 - sh
                 - '-c'
-                - >-
-                  ./src/wait-for-mysql.sh mysql && npm run migrations && npm run seeds &&
-                  npm start
+                - npm run migrations && npm run seeds && npm start
               env:
                 - name: MYSQL_USER
                   valueFrom:

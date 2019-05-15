@@ -1,5 +1,14 @@
 require('../utils/env')
 
+const testMigrationConfig = process.env.NODE_ENV === 'in_memory_not_test' ? {} : {
+  migrations: {
+    directory: './src/migrations',
+  },
+  seeds: {
+    directory: './src/seeds',
+  }
+}
+
 const defaultDatabaseConfig = {
   client: 'mysql',
   useNullAsDefault: true,
@@ -23,12 +32,7 @@ const unitTestDatabaseConfig = {
   ...defaultDatabaseConfig,
   connection: process.env.DATABASE_CONN_STR_UNIT || 'mysql://root:root@localhost:3306/users_unit_test',
   isTest: true,
-  migrations: {
-    directory: './src/migrations',
-  },
-  seeds: {
-    directory: './src/seeds',
-  }
+  ...testMigrationConfig
 }
 
 const unitTestInMemoryDatabaseConfig = {
@@ -42,22 +46,17 @@ const unitTestInMemoryDatabaseConfig = {
     idleTimeoutMillis: 360000 * 1000
   },
   isTest: true,
-  migrations: {
-    directory: './src/migrations',
-  },
-  seeds: {
-    directory: './src/seeds',
-  },
+  ...testMigrationConfig
 }
 
 let config = defaultDatabaseConfig
 
-if (process.env.NODE_ENV === 'memory') {
+if (process.env.NODE_ENV === 'memory' || process.env.NODE_ENV === 'in_memory_not_test') {
   config = unitTestInMemoryDatabaseConfig
 }
 
 if (process.env.NODE_ENV === 'test') {
   config = unitTestDatabaseConfig
 }
-console.log(config)
+
 module.exports = config

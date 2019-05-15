@@ -9,7 +9,7 @@ RUN npm install --only=production
 COPY ./src ./src
 COPY ./wait-for-mysql.sh ./src/
 
-RUN chmod +777 ./src/wait-for-mysql.sh
+RUN chmod +x ./src/wait-for-mysql.sh
 
 EXPOSE 30030
 

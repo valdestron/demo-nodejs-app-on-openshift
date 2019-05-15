@@ -21,13 +21,13 @@ ENV REACT_APP_API_URI ${REACT_APP_API_URI}
 RUN npm run build
 
 # Setup Reverse Proxy
-FROM nginx:alpine
+FROM nginx:1.12
 
 RUN rm -rf /usr/share/nginx/html/*
 
 COPY --from=node /app/build/ /usr/share/nginx/html
-COPY ./nginx.conf /etc/nginx/conf.d/default.conf
+COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]

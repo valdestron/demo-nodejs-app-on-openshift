@@ -3,7 +3,7 @@ services:
   app:
     build: ./src/user-manager
     ports:
-      - "30020:80"
+      - "30020:8080"
     depends_on:
       - api
   api:
@@ -19,7 +19,7 @@ services:
       - "30030:30030"
     depends_on:
       - mysql
-    command: ["sh", "-c", "./wait-for-mysql.sh mysql && npm run migrations && npm run seeds && npm start"]
+    command: ["sh", "-c", "./src/wait-for-mysql.sh mysql && npm run migrations && npm run seeds && npm start"]
   mysql:
     image: mysql
     restart: always
