@@ -216,6 +216,7 @@ def build() {
 def promote (project) {
     openshift.withProject(project) {
         def templateExists = openshift.selector("template/${params.APP_NAME}").exists()
+        def dbtemplate = openshift.selector("template/${params.APP_NAME}-mysql").exists()
 
         if (templateExists) {
             openshift.raw("annotate", "template ${params.APP_NAME}",
@@ -228,7 +229,15 @@ def promote (project) {
                 "kubectl.kubernetes.io/last-applied-configuration-")
         }
 
+        if (dbtemplate) {
+          openshift.raw("annotate", "template ${params.APP_NAME}-mysql",
+              "kubectl.kubernetes.io/last-applied-configuration-")
+          openshift.raw("annotate", "deploymentconfigs -l template=${params.APP_NAME}-mysql",
+              "kubectl.kubernetes.io/last-applied-configuration-")
+        }
+
         openshift.apply(readFile(params.TEMPLATE))
+        openshift.apply(readFile(params.DB_TEMPLATE))
 
         def processed = openshift.process(params.APP_NAME,
             "-l app=${params.APP_NAME}",
