@@ -98,7 +98,7 @@ def build() {
 
 
     for (obj in build_objects) {
-      obj.spec.output.to.name = params.APP_NAME + '-' + obj.metadata.labels.prefix + '-' + config.build_tag
+      obj.spec.output.to.name = params.APP_NAME + '-' + obj.metadata.labels.prefix + ':' + config.build_tag
       openshift.apply(obj)
     }
 
