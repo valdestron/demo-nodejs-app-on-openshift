@@ -88,7 +88,7 @@ def configure() {
   config.git_commit_id = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
   config.tag = "1.0.${readFile(params.VERSION_FILE).trim().toInteger()}"
   config.build_tag = config.tag + 'build_' + env.BUILD_NUMBER
-  config.image_name_prefix = "172.30.1.1:5000/${params.DEV_PROJECT}/${parms.APP_NAME}"
+  config.image_name_prefix = "172.30.1.1:5000/${params.DEV_PROJECT}/${params.APP_NAME}"
 }
 
 def build() {
