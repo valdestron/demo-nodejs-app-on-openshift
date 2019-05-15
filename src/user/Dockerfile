@@ -7,9 +7,11 @@ COPY package*.json ./
 RUN npm install --only=production
 
 COPY ./src ./src
-COPY ./wait-for-mysql.sh ./
+COPY ./wait-for-mysql.sh ./src/
 
-RUN chmod 755 ./wait-for-mysql.sh
+RUN useradd -u 1001 -r -g 0 -d ./src -s /sbin/nologin \
+    -c "App User" default
+RUN chmod 755 ./src/wait-for-mysql.sh
 
 EXPOSE 30030
 

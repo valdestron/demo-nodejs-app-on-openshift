@@ -59,5 +59,5 @@ if (process.env.NODE_ENV === 'memory') {
 if (process.env.NODE_ENV === 'test') {
   config = unitTestDatabaseConfig
 }
-
+console.log(config)
 module.exports = config

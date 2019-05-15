@@ -105,7 +105,7 @@ objects:
                 - sh
                 - '-c'
                 - >-
-                  ./wait-for-mysql.sh mysql && npm run migrations && npm run seeds &&
+                  ./src/wait-for-mysql.sh mysql && npm run migrations && npm run seeds &&
                   npm start
               env:
                 - name: MYSQL_USER
