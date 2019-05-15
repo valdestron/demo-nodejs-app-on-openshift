@@ -247,13 +247,10 @@ def deploy (project) {
         def deploymentObjects = deployments.objects()
 
         for (obj in deploymentObjects) {
-            def image_name = "${project}/${params.APP_NAME}-${obj.metadata.labels.prefix}:${config.build_tag}"
-            echo "${obj}"
+            def image_name = "${project}/${params.APP_NAME}-${obj.metadata.name}:${config.build_tag}"
             echo "${obj.metadata.name}"
 
             obj.spec.template.spec.containers[0].image = image_name
-
-            echo "deployment obj ${obj}"
             openshift.apply(obj)
         }
         
