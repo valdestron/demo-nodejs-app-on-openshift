@@ -247,7 +247,7 @@ def deploy (project) {
         def deploymentObjects = deployments.objects()
 
         for (obj in deploymentObjects) {
-            def image_name = "${project}/${params.APP_NAME}-${obj.metadata.name}:${config.build_tag}"
+            def image_name = "172.30.1.1:5000/${params.DEV_PROJECT}/${obj.metadata.name}:${config.build_tag}"
             echo "${obj.metadata.name}"
 
             obj.spec.template.spec.containers[0].image = image_name
