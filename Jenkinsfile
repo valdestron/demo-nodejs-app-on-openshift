@@ -75,24 +75,19 @@ pipeline {
             }
         }
 
-        stage("Deploy DEV, TEST") {
-            failFast true
-            parallel {
-                stage('Deploy DEV') {
-                    steps {
-                        script {
-                            deploy(params.DEV_PROJECT)
-                        }
-                    }
+        stage('Deploy DEV') {
+            steps {
+                script {
+                    deploy(params.DEV_PROJECT)
                 }
+            }
+        }
 
-                stage('Deploy TEST') {
-                    steps {
-                        script {
-                            promote(params.TEST_PROJECT)
-                            deploy(params.TEST_PROJECT)
-                        }
-                    }
+        stage('Deploy TEST') {
+            steps {
+                script {
+                    promote(params.TEST_PROJECT)
+                    deploy(params.TEST_PROJECT)
                 }
             }
         }
@@ -253,7 +248,8 @@ def deploy (project) {
 
         for (obj in deploymentObjects) {
             def image_name = "${project}/${params.APP_NAME}-${obj.metadata.labels.prefix}:${config.build_tag}"
-
+            echo "${obj}"
+            echo "${obj.metadata.name}"
             if (obj.metadata.name == "${params.APP_NAME}-api")  { // hacky,...
                 obj.spec.template.spec.containers[1].image = imageName
             } else {
