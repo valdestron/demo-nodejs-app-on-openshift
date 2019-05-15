@@ -14,7 +14,7 @@ parameters:
   - name: VERSION_FILE
     value: VERSION
   - name: TEMPLATE
-    value: src/infra/user-manager-tmplate.yml
+    value: src/installer/user-manager-tmplate.yml
   - name: DEV_PROJECT
     value: user-manager-dev
   - name: TEST_PROJECT

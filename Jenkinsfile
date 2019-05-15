@@ -74,6 +74,84 @@ pipeline {
                 }
             }
         }
+
+        stage("Deploy DEV, TEST") {
+            failFast true
+            parallel {
+                stage('Deploy DEV') {
+                    steps {
+                        script {
+                          deploy(paramas.DEV_PROJECT)
+                        }
+                    }
+                }
+
+                stage('Deploy TEST') {
+                    steps {
+                        script {
+                            promote(params.TEST_PROJECT)
+                            deploy(params.TEST_PROJECT)
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('TESTSUIT') {
+            failFast true
+            parallel {
+                stage('Integration') {
+                    steps {
+                        script {
+                            script {
+                                dir('src/testsuit') {
+                                    sh 'npm i'
+                                    sh 'npm test'
+                                    sh 'npm run coverage'
+                                }
+                            }
+                        }
+                    }
+                }
+
+                stage('Performance') {
+                    steps {
+                        script {
+                            echo 'Should start jmeteer container and run load'
+                        }
+                    }
+                }
+
+                stage('Chaos') {
+                    steps {
+                        script {
+                            echo 'Should start some bad boys in the projcet and run'
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy PROD') {
+            steps {
+                script {
+                    script {
+                        promote(params.PROD_PROJECT)
+                        deploy(params.PROD_PROJECT)
+                    }
+                }
+            }
+        }
+        
+        stage('Smoke & Report') {
+            steps {
+                script {
+                    script {
+                        echo 'Should run some smoke tests against prod and report.'
+                    }
+                }
+            }
+        }
     }
 }
 
@@ -128,14 +206,76 @@ def build() {
     }
 
     for (obj in build_objects) {
-        def image_name = config.image_name_prefix + '-' + obj.metadata.labels.prefix + '-' + config.build_tag
+        def image_name = "${params.APP_NAME}-${obj.metadata.labels.prefix}:${config.build_tag}"
         
-        echo "Tagging ${image_name} as: ${openshift.project()}/${params.APP_NAME}-${obj.metadata.labels.prefix}:latest"
+        echo "Tagging ${image_name} as: ${params.APP_NAME}-${obj.metadata.labels.prefix}:latest"
         
         openshift.tag('--source=docker',
             "${image_name}",
-            "${openshift.project()}/${params.APP_NAME}-${obj.metadata.labels.prefix}:latest")
+            "${params.APP_NAME}-${obj.metadata.labels.prefix}:latest")
     }
 
   }
+}
+
+def promote (project) {
+    openshift.project(project) {
+        def templateExists = openshift.selector("template/${params.APP_NAME}").exists()
+
+        if (templateExists) {
+            openshift.raw("annotate", "template ${params.APP_NAME}",
+                "kubectl.kubernetes.io/last-applied-configuration-")
+                
+            openshift.raw("annotate", "buildconfigs -l app=${params.APP_NAME}",
+                "kubectl.kubernetes.io/last-applied-configuration-")
+
+            openshift.raw("annotate", "deploymentconfigs -l app=${params.APP_NAME}",
+                "kubectl.kubernetes.io/last-applied-configuration-")
+        }
+
+        openshift.apply(readFile(params.TEMPLATE))
+
+        def processed = openshift.process(params.APP_NAME,
+            "-l app=${params.APP_NAME}"
+            "-p",
+            "TAG=${config.tag}",
+            "NAMESPACE=${params.DEV_PROJECT}")
+
+        openshift.apply(processed).narrow('bc').delete()
+    }
+}
+
+def deploy (project) {
+    openshift.project(project) {
+        def result = null
+        def deployments = openshift.selector('dc', [ app: params.APP_NAME ])
+        def deploymentObjects = deployments.objects()
+
+        for (obj in deploymentObjects) {
+            def image_name = "${project}/${params.APP_NAME}-${obj.metadata.labels.prefix}:${config.build_tag}"
+
+            if (obj.metadata.name == "${paramas.APP_NAME}-api")  { // hacky,...
+                obj.spec.template.spec.containers[1].image = imageName
+            } else {
+                obj.spec.template.spec.containers[0].image = imageName
+            }
+            echo "deployment obj ${obj}"
+            openshift.apply(obj)
+        }
+        
+        try {
+            deployments.rollout().latest()
+        } catch (e) {
+            echo "${e}"
+            echo "Rollout maybe in progress"
+        }
+        
+        timeout(time: 5, unit: 'MINUTES') {
+            result = deployments.rollout().status('-w')
+        }
+        
+        if (result.status != 0) {
+            error(result.err)
+        }
+    }
 }
