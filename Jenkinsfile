@@ -19,61 +19,61 @@ pipeline {
             }
         }
 
-        // stage("Build, Test, Lint ....") {
-        //     failFast true
-        //     parallel {
-        //         stage('Unit') {
-        //             steps {
-        //                 script {
-        //                     dir('src/user') {
-        //                       sh 'npm i'
-        //                       sh 'npm test'
-        //                       sh 'npm run coverage'
-        //                     }
-        //                 }
-        //             }
-        //             // do any kinds of post
-        //             post {
-        //               always {
-        //                 step([
-        //                     $class: 'CoberturaPublisher',
-        //                     autoUpdateHealth: false,
-        //                     autoUpdateStability: true,
-        //                     coberturaReportFile: '**/coverage/cobertura-coverage.xml', 
-        //                     failUnhealthy: false,
-        //                     failUnstable: true,
-        //                     maxNumberOfBuilds: 0,
-        //                     onlyStable: true,
-        //                     sourceEncoding: 'ASCII',
-        //                     zoomCoverageChart: false
-        //                 ])
-        //               }
-        //             }
-        //         }
+        stage("Build, Test, Lint ....") {
+            failFast true
+            parallel {
+                stage('Unit') {
+                    steps {
+                        script {
+                            dir('src/user') {
+                              sh 'npm i'
+                              sh 'npm test'
+                              sh 'npm run coverage'
+                            }
+                        }
+                    }
+                    // do any kinds of post
+                    post {
+                      always {
+                        step([
+                            $class: 'CoberturaPublisher',
+                            autoUpdateHealth: false,
+                            autoUpdateStability: true,
+                            coberturaReportFile: '**/coverage/cobertura-coverage.xml', 
+                            failUnhealthy: false,
+                            failUnstable: true,
+                            maxNumberOfBuilds: 0,
+                            onlyStable: true,
+                            sourceEncoding: 'ASCII',
+                            zoomCoverageChart: false
+                        ])
+                      }
+                    }
+                }
 
-        //         stage('Build') {
-        //             steps {
-        //                 script {
-        //                     build()
-        //                 }
-        //             }
-        //         }
-        //         stage('Package scanning') {
-        //             steps {
-        //                 script {
-        //                     echo "should package scanning stage run here"
-        //                 }
-        //             }
-        //         }
-        //         stage('Lint') {
-        //             steps {
-        //                 script {
-        //                     echo "Should linting stage run here"
-        //                 }
-        //             }
-        //         }
-        //     }
-        // }
+                stage('Build') {
+                    steps {
+                        script {
+                            build()
+                        }
+                    }
+                }
+                stage('Package scanning') {
+                    steps {
+                        script {
+                            echo "should package scanning stage run here"
+                        }
+                    }
+                }
+                stage('Lint') {
+                    steps {
+                        script {
+                            echo "Should linting stage run here"
+                        }
+                    }
+                }
+            }
+        }
 
         stage("Deploy DEV, TEST") {
             failFast true
