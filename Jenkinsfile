@@ -81,39 +81,7 @@ pipeline {
                 stage('Deploy DEV') {
                     steps {
                         script {
-                          openshift.project(params.DEV_PROJECT) {
-                            def result = null
-                            def deployments = openshift.selector('dc', [ app: params.APP_NAME ])
-                            def deploymentObjects = deployments.objects()
-
-                            for (obj in deploymentObjects) {
-                                def image_name = "${project}/${params.APP_NAME}-${obj.metadata.labels.prefix}:${config.build_tag}"
-
-                                if (obj.metadata.name == "${params.APP_NAME}-api")  { // hacky,...
-                                    obj.spec.template.spec.containers[1].image = imageName
-                                } else {
-                                    obj.spec.template.spec.containers[0].image = imageName
-                                }
-                                echo "deployment obj ${obj}"
-                                openshift.apply(obj)
-                            }
-                            
-                            try {
-                                deployments.rollout().latest()
-                            } catch (e) {
-                                echo "${e}"
-                                echo "Rollout maybe in progress"
-                            }
-                            
-                            timeout(time: 5, unit: 'MINUTES') {
-                                result = deployments.rollout().status('-w')
-                            }
-                            
-                            if (result.status != 0) {
-                                error(result.err)
-                            }
-                        }
-                          //deploy(params.DEV_PROJECT)
+                            deploy(params.DEV_PROJECT)
                         }
                     }
                 }
