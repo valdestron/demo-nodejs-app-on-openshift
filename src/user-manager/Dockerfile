@@ -27,6 +27,6 @@ RUN rm -rf /opt/app-root/src/*
 COPY --from=node /app/build /opt/app-root/src/
 COPY nginx.conf /etc/nginx/nginx.conf
 
-EXPOSE 80
+EXPOSE 8080
 
 CMD ["nginx", "-g", "daemon off;"]
