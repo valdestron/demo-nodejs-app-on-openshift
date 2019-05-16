@@ -138,7 +138,9 @@ def createPreview() {
   echo "Createing preview"
   config.previewProject = "${params.PREVIEW_PROJECT}-asd2e2" // for test puroposes
   openshift.withCluster() {
-      openshift.newProject("${params.PREVIEW_PROJECT}-asd2e2")
+      openshift.withCredentials('user-manager-dev-git') {
+        openshift.newProject("${params.PREVIEW_PROJECT}-asd2e2")
+      }
   }
 }
 
