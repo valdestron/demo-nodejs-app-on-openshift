@@ -129,6 +129,8 @@ objects:
                     secretKeyRef:
                       key: database-name
                       name: "${DATABASE_SERVICE_NAME}"
+                - name: MYSQL_HOST
+                  value: mysql
       triggers:
         - type: ImageChange
           imageChangeParams:

@@ -244,7 +244,10 @@ def promote (project) {
             "-p",
             "TAG=${config.build_tag}",
             "NAMESPACE=${params.DEV_PROJECT}")
+        def processedDb = openshift.process(params.APP_NAME,
+            "-l app=${params.APP_NAME}",)
 
+        openshift.apply(processedDb)
         openshift.apply(processed).narrow('bc').delete()
     }
 }
