@@ -99,10 +99,14 @@ pipeline {
                     steps {
                         script {
                             script {
-                                dir('src/testsuit') {
-                                    sh 'npm i'
-                                    sh 'npm test'
-                                    sh 'npm run coverage'
+                                withEnv([
+                                  APP_URL=
+                                ]) {
+                                    dir('src/testsuit') {
+                                        sh 'npm i'
+                                        sh 'npm test'
+                                        sh 'npm run coverage'
+                                    }
                                 }
                             }
                         }
@@ -243,8 +247,9 @@ def promote (project) {
             "-l app=${params.APP_NAME}",
             "-p",
             "TAG=${config.build_tag}",
+            "ROUTE_PROJECT=${project}"
             "NAMESPACE=${params.DEV_PROJECT}")
-        def processedDb = openshift.process(params.APP_NAME,
+        def processedDb = openshift.process('mysql-persistent',
             "-l app=${params.APP_NAME}",)
 
         openshift.apply(processedDb)

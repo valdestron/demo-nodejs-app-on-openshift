@@ -197,7 +197,7 @@ objects:
         template: ${APP_NAME}
       name: ${APP_NAME}-app
     spec:
-      host: ${APP_NAME}-app-user-manager-dev.192.168.99.105.nip.io
+      host: ${APP_NAME}-app-${ROUTE_PROJECT}.192.168.99.105.nip.io
       port:
         targetPort: default
       to:
@@ -240,3 +240,5 @@ parameters:
     value: src
   - name: DATABASE_SERVICE_NAME
     value: mysql
+  - name: ROUTE_PROJECT
+    value: user-manager-dev
