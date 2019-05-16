@@ -139,6 +139,14 @@ pipeline {
                 script {
                     script {
                         echo 'Should run some smoke tests against prod and report.'
+                        def response = sh(
+                            returneStdout: true, 
+                            script: 'curl --write-out %{http_code} --silent --output /dev/null http://user-manager-app-user-manager-test.192.168.99.105.nip.io/')
+                        echo "${response}"
+                        if (response != '200') {
+                          error('build fail -- do rollback')
+                          return false
+                        }
                     }
                 }
             }
@@ -225,15 +233,14 @@ def promote (project) {
                 "kubectl.kubernetes.io/last-applied-configuration-")
         }
 
-        if (dbtemplate) {
-          openshift.raw("annotate", "template ${params.APP_NAME}-mysql",
-              "kubectl.kubernetes.io/last-applied-configuration-")
-          openshift.raw("annotate", "deploymentconfigs -l template=${params.APP_NAME}-mysql",
-              "kubectl.kubernetes.io/last-applied-configuration-")
+        if (!dbtemplate) {
+          openshift.apply(readFile(params.DB_TEMPLATE))
+          def processedDb = openshift.process('mysql-persistent',
+              "-l app=${params.APP_NAME}",)
+          openshift.apply(processedDb)
         }
 
         openshift.apply(readFile(params.TEMPLATE))
-        openshift.apply(readFile(params.DB_TEMPLATE))
 
         def processed = openshift.process(params.APP_NAME,
             "-l app=${params.APP_NAME}",
@@ -241,10 +248,6 @@ def promote (project) {
             "TAG=${config.build_tag}",
             "ROUTE_PROJECT=${project}",
             "NAMESPACE=${params.DEV_PROJECT}")
-        def processedDb = openshift.process('mysql-persistent',
-            "-l app=${params.APP_NAME}",)
-
-        openshift.apply(processedDb)
         openshift.apply(processed).narrow('bc').delete()
     }
 }
