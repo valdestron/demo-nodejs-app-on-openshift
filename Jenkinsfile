@@ -99,11 +99,7 @@ pipeline {
                     steps {
                         script {
                             script {
-                                withEnv([
-                                  APP_URL='http://user-manager-app-user-manager-test.192.168.99.105.nip.io/'
-                                ]) {
-                                    echo "Deploy integration test container, that will start run tests on ${APP_URL}"
-                                }
+                                echo "Deploy integration test container, that will start run tests on test route"
                             }
                         }
                     }
