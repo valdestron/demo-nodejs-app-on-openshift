@@ -1,0 +1,60 @@
+apiVersion: v1
+kind: Template
+metadata:
+  name: user-manager-pr-pipeline
+parameters:
+  - name: GIT_URL
+    value: git@github.com:valdestron/demo-nodejs-app-on-openshift.git
+  - name: BRANCH
+    value: master
+  - name: GIT_SSH
+    value: git
+  - name: APP_NAME
+    value: user-manager
+  - name: VERSION_FILE
+    value: VERSION
+  - name: TEMPLATE
+    value: src/installer/user-manager.yml
+  - name: DB_TEMPLATE
+    value: src/installer/user-manager-mysql.yml
+  - name: PREVIEW_PROJECT
+    value: user-manager-preview
+  - name: WEBHOOK
+    generate: expression
+    from: '[a-zA-Z0-9]{40}'
+objects:
+  - apiVersion: v1
+    kind: BuildConfig
+    metadata:
+      name: user-manager-pr-pipeline
+    spec:
+      triggers:
+        - type: Generic
+          generic:
+            secret: '${WEBHOOK}'
+      source:
+        type: 'Git'
+        git:
+          uri: ${GIT_URL}
+          ref: ${BRANCH}
+        sourceSecret:
+          name: ${GIT_SSH}
+      strategy:
+        type: 'JenkinsPipeline'
+        jenkinsPipelineStrategy:
+          env:
+            - name: GIT_URL
+              value: '${GIT_URL}'
+            - name: GIT_SSH
+              value: '${GIT_SSH}'
+            - name: APP_NAME
+              value: '${APP_NAME}'
+            - name: VERSION_FILE
+              value: '${VERSION_FILE}'
+            - name: TEMPLATE
+              value: '${TEMPLATE}'
+            - name: DB_TEMPLATE
+              value: '${DB_TEMPLATE}'
+            - name: PREVIEW_PROJECT
+              value: '${PREVIEW_PROJECT}'
+          jenkinsfilePath: Jenkinsfile.pr
