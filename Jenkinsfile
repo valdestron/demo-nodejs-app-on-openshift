@@ -242,9 +242,9 @@ def promote (project) {
         def processed = openshift.process(params.APP_NAME,
             "-l app=${params.APP_NAME}",
             "-p",
+            "TAG=${config.build_tag}",
             "NAMESPACE=${params.DEV_PROJECT}")
 
-        openshift.apply(processed).narrow('is').delete()
         openshift.apply(processed).narrow('bc').delete()
     }
 }
@@ -258,6 +258,7 @@ def deploy (project) {
         for (obj in deploymentObjects) {
             def image_name = "172.30.1.1:5000/${params.DEV_PROJECT}/${obj.metadata.name}:${config.build_tag}"
             obj.spec.template.spec.containers[0].image = image_name
+            echo "${obj}"
             openshift.apply(obj)
         }
         
