@@ -4,6 +4,26 @@ pipeline {
     agent {
         label 'nodejs'
     }
+
+    triggers {
+        GenericTrigger(
+            genericVariables: [
+              [key: 'ref', value: '$.ref']
+            ],
+            
+            causeString: 'Triggered on $ref',
+            
+            token: 'test123',
+            
+            printContributedVariables: true,
+            printPostContent: true,
+            
+            silentResponse: false,
+            
+            regexpFilterText: '$ref',
+            regexpFilterExpression: 'refs/heads/' + BRANCH_NAME
+        )
+    }
     
     options {
         buildDiscarder(logRotator(numToKeepStr: '10'))
