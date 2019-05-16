@@ -243,7 +243,7 @@ def promote (project) {
             "-l app=${params.APP_NAME}",
             "-p",
             "TAG=${config.build_tag}",
-            "ROUTE_PROJECT=${project}"
+            "ROUTE_PROJECT=${project}",
             "NAMESPACE=${params.DEV_PROJECT}")
         def processedDb = openshift.process('mysql-persistent',
             "-l app=${params.APP_NAME}",)
