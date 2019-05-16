@@ -139,14 +139,6 @@ pipeline {
                 script {
                     script {
                         echo 'Should run some smoke tests against prod and report.'
-                        def response = sh(
-                            returneStdout: true, 
-                            script: 'curl --write-out %{http_code} --silent --output /dev/null http://user-manager-app-user-manager-test.192.168.99.105.nip.io/')
-                        echo "${response}"
-                        if (response != '200') {
-                          error('build fail -- do rollback')
-                          return false
-                        }
                     }
                 }
             }
@@ -235,9 +227,6 @@ def promote (project) {
 
         if (!dbtemplate) {
           openshift.apply(readFile(params.DB_TEMPLATE))
-          def processedDb = openshift.process('mysql-persistent',
-              "-l app=${params.APP_NAME}",)
-          openshift.apply(processedDb)
         }
 
         openshift.apply(readFile(params.TEMPLATE))
