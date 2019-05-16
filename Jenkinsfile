@@ -100,13 +100,9 @@ pipeline {
                         script {
                             script {
                                 withEnv([
-                                  APP_URL=
+                                  APP_URL='http://user-manager-app-user-manager-test.192.168.99.105.nip.io/'
                                 ]) {
-                                    dir('src/testsuit') {
-                                        sh 'npm i'
-                                        sh 'npm test'
-                                        sh 'npm run coverage'
-                                    }
+                                    echo "Deploy integration test container, that will start run tests on ${APP_URL}"
                                 }
                             }
                         }
