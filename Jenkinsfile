@@ -220,7 +220,7 @@ def build() {
 def promote (project) {
     openshift.withProject(project) {
         def templateExists = openshift.selector("template/${params.APP_NAME}").exists()
-        def dbtemplate = openshift.selector("template/${params.APP_NAME}-mysql").exists()
+        def dbtemplate = openshift.selector("template/mysql-persistent").exists()
 
         if (templateExists) {
             openshift.raw("annotate", "template ${params.APP_NAME}",
