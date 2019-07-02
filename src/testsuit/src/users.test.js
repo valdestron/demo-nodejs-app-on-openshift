@@ -6,7 +6,7 @@ const parse = require('date-fns/parse')
 chai.use(chaiHttp)
 const expect = chai.expect
 
-const APP_URL = process.env.APP_URL || 'http://localhost:3003'
+const APP_URL = process.env.APP_URL || 'http://localhost:30030'
 
 describe('User API Routes', () => {
 
